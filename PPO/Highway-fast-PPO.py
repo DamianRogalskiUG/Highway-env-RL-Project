@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 from stable_baselines3 import PPO
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import SubprocVecEnv
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     # Configure the environment
     simulation_params = {
         "simulation_frequency": 60,
-        "lanes_count": 3,
+        "lanes_count": 4,
         "vehicles_count": 30
     }
     env.configure(simulation_params)

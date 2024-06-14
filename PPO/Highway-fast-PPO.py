@@ -1,76 +1,57 @@
 import gymnasium as gym
 from stable_baselines3 import PPO
-from stable_baselines3.common.env_util import make_vec_env
-from stable_baselines3.common.vec_env import SubprocVecEnv
-
 import highway_env
 
-if __name__ == "__main__":
-    # Set to True to train the agent, False to load and run the trained agent
-    train_agent = False
+# Set to True if training the model is needed
+TRAIN_MODEL = False  # Change to True if you want to train
 
-    if train_agent:
-        # Training hyperparameters
-        num_cpu = 8
-        batch_size = 64
-        total_timesteps = int(2e4)
-        num_steps = batch_size * 12 // num_cpu
-
-        # Create a vectorized environment
-        env_name = "highway-fast-v0"
-        env = make_vec_env(env_name, n_envs=num_cpu, vec_env_cls=SubprocVecEnv)
-
-        # Define the policy network architecture and initialize the PPO agent
-        policy_architecture = [dict(pi=[256, 256], vf=[256, 256])]
-        model = PPO(
-            "MlpPolicy",
-            env,
-            policy_kwargs=dict(net_arch=policy_architecture),
-            n_steps=num_steps,
-            batch_size=batch_size,
-            n_epochs=10,
-            learning_rate=5e-4,
-            gamma=0.8,
-            verbose=2,
-            tensorboard_log="highway_ppo/",
-        )
-
-        # Train the agent
-        model.learn(total_timesteps=total_timesteps)
-
-        # Save the trained agent
-        model.save("highway_ppo/model")
-
-    # Load the trained agent
-    model = PPO.load("highway_ppo/model")
-
-    # Create the environment for testing
-    env_name = "highway-fast-v0"
-    env = gym.make(env_name, render_mode="rgb_array")
-
-    # Configure the environment
+def create_env():
+    env = gym.make("highway-fast-v0", render_mode="rgb_array")
     simulation_params = {
-        "simulation_frequency": 60,
-        "lanes_count": 4,
+        "simulation_frequency": 15,
+        "lanes_count": 3,
         "vehicles_count": 30
     }
     env.configure(simulation_params)
+    return env
 
-    # Reset the environment and get initial observations
+def train_ppo_model(env, total_timesteps=int(2e4), num_cpu=8, batch_size=64):
+    num_steps = batch_size * 12 // num_cpu
+    policy_architecture = [dict(pi=[256, 256], vf=[256, 256])]
+    model = PPO(
+        "MlpPolicy",
+        env,
+        policy_kwargs=dict(net_arch=policy_architecture),
+        n_steps=num_steps,
+        batch_size=batch_size,
+        n_epochs=10,
+        learning_rate=5e-4,
+        verbose=2,
+        tensorboard_log="highway_ppo/"
+    )
+    model.learn(total_timesteps=total_timesteps)
+    model.save("highway_ppo/model")
+    return model
+
+def test_ppo_model(model, env, num_steps=500):
     obs, info = env.reset()
-
-    # Run the simulation for a fixed number of steps
-    num_steps = 500
     for _ in range(num_steps):
         done = truncated = False
-
-        # Loop until episode ends or is truncated
         while not (done or truncated):
-            # Agent predicts action based on observation
             action, _ = model.predict(obs)
-
-            # Take action and observe the next state and reward
             obs, reward, done, truncated, info = env.step(action)
-
-            # Render the environment
             env.render()
+    env.close()
+
+def main():
+    env = create_env()
+
+    if TRAIN_MODEL:
+        model = train_ppo_model(env)
+    else:
+        model = PPO.load("highway_ppo/model")
+
+    test_ppo_model(model, env)
+
+if __name__ == "__main__":
+    main()

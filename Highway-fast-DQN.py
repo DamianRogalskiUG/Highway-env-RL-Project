@@ -1,15 +1,17 @@
 import gymnasium as gym
+import numpy as np
 from gym.wrappers import RecordVideo
+from matplotlib import pyplot as plt
 from stable_baselines3 import DQN
-
 import highway_env
 
-TRAIN = True
+# Set to True if training the model is needed
+TRAIN = False  # Change to True if you want to train
 
 def main():
-    # Create the environment
+    # Set up the environment
     env = gym.make("highway-fast-v0", render_mode="rgb_array")
-    obs, info = env.reset()
+    env.reset()
 
     # Create the model
     model = DQN(
@@ -25,20 +27,39 @@ def main():
         gradient_steps=1,
         target_update_interval=50,
         verbose=1,
-        tensorboard_log="highway_dqn/"
+        tensorboard_log="highway_dqn/",
+
     )
+
+    # Lists for storing training statistics
+    episode_rewards = []
+    mean_rewards = []
 
     # Train the model
     if TRAIN:
-        model.learn(total_timesteps=int(2e4))
-        model.save("highway_dqn/model")
-        del model
+        # Callback function to save stats after each episode
+        def _save_stats(locals_, globals_):
+            nonlocal episode_rewards, mean_rewards
+            episode_rewards.append(locals_['self'].episode_reward)
+            mean_rewards.append(np.mean(episode_rewards[-100:]))
 
-    # Run the trained model and record video
+        model.learn(total_timesteps=int(2e4), callback=_save_stats)
+
+    # Load the trained model
     model = DQN.load("highway_dqn/model", env=env)
-    env.configure({"simulation_frequency": 60})  # Higher FPS for rendering
+    env.configure({
+        "simulation_frequency": 60,
+        "lanes_count": 3,
+        "vehicles_count": 30
+    })
 
-    for videos in range(1000):
+    # Function to save episode rewards during training
+    def _save_stats(locals_, globals_):
+        nonlocal episode_rewards, mean_rewards
+        episode_rewards.append(env.episode_reward)
+        mean_rewards.append(np.mean(episode_rewards[-100:]))
+
+    for _ in range(1000):
         done = truncated = False
         obs, info = env.reset()
         while not (done or truncated):
@@ -48,6 +69,7 @@ def main():
             obs, reward, done, truncated, info = env.step(action)
             # Render
             env.render()
+
     env.close()
 
 if __name__ == "__main__":

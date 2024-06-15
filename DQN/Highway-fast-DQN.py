@@ -10,9 +10,28 @@ TRAIN_MODEL = False  # Change to True if you want to train
 def create_env():
     env = gym.make("highway-fast-v0", render_mode="rgb_array")
     simulation_params = {
-        "simulation_frequency": 60,
+        "observation": {
+            "type": "Kinematics"
+        },
+        "action": {
+            "type": "DiscreteMetaAction",
+        },
         "lanes_count": 3,
-        "vehicles_count": 30
+        "vehicles_count": 20,
+        "duration": 120,
+        "initial_spacing": 2,
+        "collision_reward": -1,
+        "reward_speed_range": [20, 30],
+        "simulation_frequency": 60,
+        "policy_frequency": 1,
+        "other_vehicles_type": "highway_env.vehicle.behavior.IDMVehicle",
+        "screen_width": 600,
+        "screen_height": 150,
+        "centering_position": [0.3, 0.5],
+        "scaling": 5.5,
+        "show_trajectories": False,
+        "render_agent": True,
+        "offscreen_rendering": False
     }
     env.configure(simulation_params)
     return env

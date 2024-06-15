@@ -7,7 +7,7 @@ import highway_env  # noqa: F401
 
 TRAIN_MODEL = False
 
-def create_train_env():
+def create_env():
     env = gym.make("highway-fast-v0")
     env.configure(
         {
@@ -25,7 +25,7 @@ def create_train_env():
 
 
 def create_test_env():
-    env = create_train_env()
+    env = create_env()
     env.configure({"policy_frequency": 15, "duration": 20})
     env.reset()
     return env
@@ -80,7 +80,7 @@ def main():
     # Train
     # model = train_dqn_model(train_env)
     if TRAIN_MODEL:
-        model = create_train_env()
+        model = create_env()
     else:
         env = gym.make("highway-fast-v0", render_mode="rgb_array")
         env.configure(

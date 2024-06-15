@@ -3,7 +3,7 @@ from stable_baselines3 import PPO
 import highway_env
 
 # Set to True if training the model is needed
-TRAIN_MODEL = True  # Change to True if you want to train
+TRAIN_MODEL = False  # Change to True if you want to train
 
 def create_env():
     env = gym.make("highway-fast-v0", render_mode="rgb_array")
@@ -49,7 +49,7 @@ def main():
     if TRAIN_MODEL:
         model = train_ppo_model(env)
     else:
-        model = PPO.load("highway_ppo/model")
+        model = PPO.load("../PPO/highway_ppo/model.zip")
 
     test_ppo_model(model, env)
 

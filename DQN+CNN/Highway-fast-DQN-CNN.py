@@ -31,7 +31,7 @@ def create_test_env():
     return env
 
 
-def train_dqn_model(env, total_timesteps=int(2e4)):
+def train_dqn_model(env, total_timesteps=int(1e5)):
     model = DQN(
         "CnnPolicy",
         DummyVecEnv([lambda: env]),

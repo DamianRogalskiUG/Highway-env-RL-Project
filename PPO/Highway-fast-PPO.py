@@ -3,7 +3,7 @@ from stable_baselines3 import PPO
 import highway_env
 
 # Set to True if training the model is needed
-TRAIN_MODEL = False  # Change to True if you want to train
+TRAIN_MODEL = True  # Change to True if you want to train
 
 def create_env():
     env = gym.make("highway-fast-v0", render_mode="rgb_array")

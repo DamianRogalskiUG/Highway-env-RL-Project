@@ -3,7 +3,7 @@ import numpy as np
 from stable_baselines3 import DQN
 import highway_env
 
-TRAIN_MODEL = False  # Change to True if you want to train
+TRAIN_MODEL = True  # Change to True if you want to train
 
 
 
@@ -37,27 +37,26 @@ def create_env():
     return env
 
 
-def create_model(env):
-    return DQN(
+def train_dqn_model(env, total_timesteps=4e4):
+    model = DQN(
         "MlpPolicy",
         env,
         policy_kwargs=dict(net_arch=[256, 256]),
-        learning_rate=5e-2,
+        learning_rate=5e-4,
         buffer_size=15000,
         learning_starts=200,
-        batch_size=16,
+        batch_size=32,
         train_freq=1,
         gradient_steps=1,
         target_update_interval=50,
         verbose=1,
-        tensorboard_log="DQN/highway_dqn/"
+        tensorboard_log="highway_dqn/"
     )
-
-def train_model(model, total_timesteps=2e3):
-    episode_rewards = []
-    mean_rewards = []
     model.learn(total_timesteps=int(total_timesteps))
-    return episode_rewards, mean_rewards
+    model.save("highway_dqn/model")
+
+    return model
+
 
 def test_trained_model(model, env, episodes=1000):
     for _ in range(episodes):
@@ -74,10 +73,9 @@ def main():
 
 
     if TRAIN_MODEL:
-        model = create_model(env)
-        episode_rewards, mean_rewards = train_model(model)
+        model = train_dqn_model(env)
     else:
-        model = DQN.load("DQN/highway_dqn/model", env=env)
+        model = DQN.load("highway_dqn/model", env=env)
 
 
     test_trained_model(model, env)

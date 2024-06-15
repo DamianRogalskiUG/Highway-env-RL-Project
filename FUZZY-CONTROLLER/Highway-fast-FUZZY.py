@@ -14,7 +14,7 @@ def create_env():
         "action": {
             "type": "DiscreteMetaAction",
         },
-        "lanes_count": 4,
+        "lanes_count": 3,
         "vehicles_count": 10,
         "duration": 120,
         "initial_spacing": 2,
@@ -42,7 +42,7 @@ def define_fuzzy_controller():
     action = ctrl.Consequent(np.arange(0, 5, 1), 'action')
 
     # Define membership functions for distance
-    distance['very_close'] = fuzz.trapmf(distance.universe, [0, 0, 10, 20])
+    distance['very_close'] = fuzz.trapmf(distance.universe, [-100, 0, 10, 20])
     distance['close'] = fuzz.trapmf(distance.universe, [10, 20, 30, 40])
     distance['medium'] = fuzz.trapmf(distance.universe, [30, 40, 50, 60])
     distance['far'] = fuzz.trapmf(distance.universe, [50, 60, 70, 80])
@@ -112,7 +112,7 @@ def get_action(obs, action_sim):
 
     distance_to_lead = lead_vehicle[2] * 100  # Scale to 0-100
     ego_speed = ego_vehicle[3] * 100  # Scale to 0-100
-
+    print(distance_to_lead, ego_speed)
     action_sim.input['distance'] = distance_to_lead
     action_sim.input['speed'] = ego_speed
 
@@ -126,9 +126,7 @@ def test_fuzzy_controller(env, action_sim, episodes=10):
         obs, info = env.reset()
         done = truncated = False
         while not (done or truncated):
-            for i in range(len(obs)):
-                if i != 0 and obs[i][1] == obs[0][1]:
-                    print(obs[i][1])
+
             action = get_action(obs, action_sim)
             obs, reward, done, truncated, info = env.step(action)
             env.render()

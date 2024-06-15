@@ -3,7 +3,7 @@ import numpy as np
 from stable_baselines3 import DQN
 import highway_env
 
-TRAIN_MODEL = True  # Change to True if you want to train
+TRAIN_MODEL = False  # Change to True if you want to train
 
 
 
@@ -17,7 +17,7 @@ def create_env():
             "type": "DiscreteMetaAction",
         },
         "lanes_count": 3,
-        "vehicles_count": 20,
+        "vehicles_count": 15,
         "duration": 120,
         "initial_spacing": 2,
         "collision_reward": -1,
@@ -63,7 +63,7 @@ def test_trained_model(model, env, episodes=1000):
         done = truncated = False
         obs, info = env.reset()
         while not (done or truncated):
-            action, _states = model.predict(obs, deterministic=True)
+            action, _states = model.predict(obs)
             obs, reward, done, truncated, info = env.step(action)
             env.render()
     env.close()

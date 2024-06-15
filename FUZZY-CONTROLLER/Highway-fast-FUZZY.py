@@ -106,6 +106,9 @@ def get_action(obs, action_sim):
 
     ego_vehicle = obs[0]  # First row as ego vehicle
     lead_vehicle = obs[1]  # Second row as lead vehicle
+    for i in range(len(obs)):
+        if i != 0 and obs[i][2] == ego_vehicle[2]:
+            lead_vehicle = obs[i]
 
     distance_to_lead = lead_vehicle[2] * 100  # Scale to 0-100
     ego_speed = ego_vehicle[3] * 100  # Scale to 0-100
@@ -123,6 +126,9 @@ def test_fuzzy_controller(env, action_sim, episodes=10):
         obs, info = env.reset()
         done = truncated = False
         while not (done or truncated):
+            for i in range(len(obs)):
+                if i != 0 and obs[i][1] == obs[0][1]:
+                    print(obs[i][1])
             action = get_action(obs, action_sim)
             obs, reward, done, truncated, info = env.step(action)
             env.render()

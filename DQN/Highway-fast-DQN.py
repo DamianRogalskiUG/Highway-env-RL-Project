@@ -3,6 +3,21 @@ import numpy as np
 from stable_baselines3 import DQN
 import highway_env
 
+TRAIN_MODEL = False  # Change to True if you want to train
+
+
+
+def create_env():
+    env = gym.make("highway-fast-v0", render_mode="rgb_array")
+    simulation_params = {
+        "simulation_frequency": 60,
+        "lanes_count": 3,
+        "vehicles_count": 30
+    }
+    env.configure(simulation_params)
+    return env
+
+
 def create_model(env):
     return DQN(
         "MlpPolicy",
@@ -36,10 +51,8 @@ def test_trained_model(model, env, episodes=1000):
     env.close()
 
 def main():
-    TRAIN_MODEL = False  # Change to True if you want to train
+    env = create_env()
 
-    env = gym.make("highway-fast-v0", render_mode="rgb_array")
-    env.reset()
 
     if TRAIN_MODEL:
         model = create_model(env)
@@ -47,12 +60,6 @@ def main():
     else:
         model = DQN.load("DQN/highway_dqn/model", env=env)
 
-    simulation_params = {
-        "simulation_frequency": 60,
-        "lanes_count": 3,
-        "vehicles_count": 30
-    }
-    env.configure(simulation_params)
 
     test_trained_model(model, env)
 

@@ -3,19 +3,19 @@ from stable_baselines3 import PPO
 import highway_env
 
 # Set to True if training the model is needed
-TRAIN_MODEL = False  # Change to True if you want to train
+TRAIN_MODEL = True  # Change to True if you want to train
 
 def create_env():
     env = gym.make("highway-fast-v0", render_mode="rgb_array")
     simulation_params = {
-        "simulation_frequency": 15,
+        "simulation_frequency": 60,
         "lanes_count": 3,
         "vehicles_count": 30
     }
     env.configure(simulation_params)
     return env
 
-def train_ppo_model(env, total_timesteps=int(2e4), num_cpu=8, batch_size=64):
+def train_ppo_model(env, total_timesteps=int(2e4), num_cpu=8, batch_size=32):
     num_steps = batch_size * 12 // num_cpu
     policy_architecture = [dict(pi=[256, 256], vf=[256, 256])]
     model = PPO(

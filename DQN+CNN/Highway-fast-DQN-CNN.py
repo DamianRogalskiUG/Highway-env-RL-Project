@@ -8,7 +8,7 @@ import highway_env  # noqa: F401
 TRAIN_MODEL = False
 
 def create_env():
-    env = gym.make("highway-fast-v0")
+    env = gym.make("highway-fast-v0", render_mode="rgb_array")
     env.configure(
         {
             "observation": {
@@ -18,6 +18,8 @@ def create_env():
                 "weights": [0.2989, 0.5870, 0.1140],  # weights for RGB conversion
                 "scaling": 1.75,
             },
+            "simulation_frequency": 30,
+
         }
     )
     env.reset()
@@ -79,24 +81,10 @@ def test_cnn_model(model, env, num_steps=500):
 def main():
     # Train
     # model = train_dqn_model(train_env)
+    env = create_env()
     if TRAIN_MODEL:
-        model = create_env()
+        model = train_dqn_model(env)
     else:
-        env = gym.make("highway-fast-v0", render_mode="rgb_array")
-        env.configure(
-            {
-                "observation": {
-                    "type": "GrayscaleObservation",
-                    "observation_shape": (128, 64),
-                    "stack_size": 4,
-                    "weights": [0.2989, 0.5870, 0.1140],  # weights for RGB conversion
-                    "scaling": 1.75,
-                },
-                "simulation_frequency": 60,
-
-            }
-        )
-        env.reset()
         model = DQN.load("highway_cnn/model")
         test_cnn_model(model, env)
 

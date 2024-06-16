@@ -15,21 +15,15 @@ def create_env():
             "type": "DiscreteMetaAction",
         },
         "lanes_count": 3,
-        "vehicles_count": 15,
+        "vehicles_count": 40,
         "duration": 120,
-        "initial_spacing": 2,
-        "collision_reward": -1,
-        "reward_speed_range": [30, 40],
-        "simulation_frequency": 60,
-        "policy_frequency": 1,
-        "other_vehicles_type": "highway_env.vehicle.behavior.IDMVehicle",
+        "simulation_frequency": 30,
         "screen_width": 600,
         "screen_height": 150,
         "centering_position": [0.3, 0.5],
         "scaling": 5.5,
         "show_trajectories": False,
         "render_agent": True,
-        "offscreen_rendering": False
     }
     env.configure(simulation_params)
     return env

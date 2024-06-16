@@ -1,11 +1,10 @@
 import gymnasium as gym
-import numpy as np
 from stable_baselines3 import DQN
 import highway_env
 
+
+# Set to True if training the model is needed
 TRAIN_MODEL = False  # Change to True if you want to train
-
-
 
 def create_env():
     env = gym.make("highway-fast-v0", render_mode="rgb_array")
@@ -21,7 +20,7 @@ def create_env():
         "duration": 120,
         "initial_spacing": 2,
         "collision_reward": -1,
-        "reward_speed_range": [20, 30],
+        "reward_speed_range": [30, 40],
         "simulation_frequency": 60,
         "policy_frequency": 2,
         "screen_width": 600,
@@ -35,7 +34,7 @@ def create_env():
     return env
 
 
-def train_dqn_model(env, total_timesteps=4e4):
+def train_dqn_model(env, total_timesteps=2e4):
     model = DQN(
         "MlpPolicy",
         env,

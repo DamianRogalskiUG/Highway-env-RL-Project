@@ -1,11 +1,11 @@
 import gymnasium as gym
 from stable_baselines3 import DQN
 from stable_baselines3.common.vec_env import DummyVecEnv, VecVideoRecorder
+import highway_env
 
-import highway_env  # noqa: F401
 
-
-TRAIN_MODEL = False
+# Set to True if training the model is needed
+TRAIN_MODEL = False  # Change to True if you want to train
 
 def create_env():
     env = gym.make("highway-fast-v0", render_mode="rgb_array")

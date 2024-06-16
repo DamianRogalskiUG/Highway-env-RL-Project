@@ -3,7 +3,7 @@ from stable_baselines3 import PPO
 import highway_env
 
 # Set to True if training the model is needed
-TRAIN_MODEL = True  # Change to True if you want to train
+TRAIN_MODEL = False  # Change to True if you want to train
 
 def create_env():
     env = gym.make("highway-fast-v0", render_mode="rgb_array")
@@ -15,11 +15,11 @@ def create_env():
             "type": "DiscreteMetaAction",
         },
         "lanes_count": 3,
-        "vehicles_count": 20,
+        "vehicles_count": 15,
         "duration": 120,
         "initial_spacing": 2,
         "collision_reward": -1,
-        "reward_speed_range": [20, 30],
+        "reward_speed_range": [30, 40],
         "simulation_frequency": 60,
         "policy_frequency": 1,
         "other_vehicles_type": "highway_env.vehicle.behavior.IDMVehicle",
@@ -34,7 +34,7 @@ def create_env():
     env.configure(simulation_params)
     return env
 
-def train_ppo_model(env, total_timesteps=int(2e4), num_cpu=8, batch_size=32):
+def train_ppo_model(env, total_timesteps=int(2e4), num_cpu=6, batch_size=64):
     num_steps = batch_size * 12 // num_cpu
     policy_architecture = [dict(pi=[256, 256], vf=[256, 256])]
     model = PPO(
@@ -68,7 +68,7 @@ def main():
     if TRAIN_MODEL:
         model = train_ppo_model(env)
     else:
-        model = PPO.load("../PPO/highway_ppo/model.zip")
+        model = PPO.load("../DQN/highway_ppo/model")
 
     test_ppo_model(model, env)
 

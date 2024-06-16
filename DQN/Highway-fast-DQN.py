@@ -1,10 +1,12 @@
 import gymnasium as gym
 from stable_baselines3 import DQN
 import highway_env
-
+import matplotlib.pyplot as plt
+import numpy as np
 
 # Set to True if training the model is needed
 TRAIN_MODEL = False  # Change to True if you want to train
+
 
 def create_env():
     env = gym.make("highway-fast-v0", render_mode="rgb_array")
@@ -45,8 +47,21 @@ def train_dqn_model(env, total_timesteps=2e4):
         verbose=1,
         tensorboard_log="highway_dqn/"
     )
-    model.learn(total_timesteps=int(total_timesteps))
+
+    # List to keep track of rewards
+    rewards = []
+
+    # Callback function to collect rewards
+    def reward_callback(locals, globals):
+        rewards.append(locals['rewards'])
+        return True
+
+    model.learn(total_timesteps=int(total_timesteps), callback=reward_callback)
     model.save("highway_dqn/model")
+
+    # Save rewards for plotting
+    with open("highway_dqn/rewards.npy", "wb") as f:
+        np.save(f, rewards)
 
     return model
 
@@ -61,17 +76,32 @@ def test_trained_model(model, env, episodes=1000):
             env.render()
     env.close()
 
+
+def plot_rewards(rewards):
+    plt.figure(figsize=(12, 6))
+    plt.plot(rewards)
+    plt.xlabel('Episodes')
+    plt.ylabel('Rewards')
+    plt.title('Rewards over Time')
+    plt.show()
+
+
 def main():
     env = create_env()
 
-
     if TRAIN_MODEL:
         model = train_dqn_model(env)
+
+        # Load rewards
+        with open("highway_dqn/rewards.npy", "rb") as f:
+            rewards = np.load(f)
+
+        plot_rewards(rewards)
     else:
         model = DQN.load("highway_dqn/model", env=env)
 
-
     test_trained_model(model, env)
+
 
 if __name__ == "__main__":
     main()

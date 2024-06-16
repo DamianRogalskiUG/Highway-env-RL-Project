@@ -2,10 +2,12 @@ import gymnasium as gym
 from stable_baselines3 import DQN
 from stable_baselines3.common.vec_env import DummyVecEnv, VecVideoRecorder
 import highway_env
-
+import matplotlib.pyplot as plt
+import numpy as np
 
 # Set to True if training the model is needed
-TRAIN_MODEL = False  # Change to True if you want to train
+TRAIN_MODEL = True  # Change to True if you want to train
+
 
 def create_env():
     env = gym.make("highway-fast-v0", render_mode="rgb_array")
@@ -49,24 +51,32 @@ def train_dqn_model(env, total_timesteps=int(1e5)):
         verbose=1,
         tensorboard_log="highway_cnn/",
     )
-    model.learn(total_timesteps=total_timesteps)
+
+    # List to keep track of rewards
+    rewards = []
+
+    # Callback function to collect rewards
+    def reward_callback(locals, globals):
+        rewards.append(locals['rewards'][0])
+        return True
+
+    model.learn(total_timesteps=total_timesteps, callback=reward_callback)
     model.save("highway_cnn/model")
+
+    # Save rewards for plotting
+    with open("highway_cnn/rewards.npy", "wb") as f:
+        np.save(f, rewards)
+
     return model
 
 
 def record_video(model, env, video_length):
-    # env = VecVideoRecorder(
-    #     env,
-    #     "highway_cnn/videos/",
-    #     record_video_trigger=lambda x: x == 0,
-    #     video_length=video_length,
-    #     name_prefix="dqn-agent",
-    # )
     obs, info = env.reset()
     for _ in range(video_length + 1):
         action, _ = model.predict(obs)
         obs, _, _, _, _ = env.step(action)
     env.close()
+
 
 def test_cnn_model(model, env, num_steps=500):
     obs, info = env.reset()
@@ -78,21 +88,30 @@ def test_cnn_model(model, env, num_steps=500):
             env.render()
     env.close()
 
+
+def plot_rewards(rewards):
+    plt.figure(figsize=(12, 6))
+    plt.plot(rewards)
+    plt.xlabel('Episodes')
+    plt.ylabel('Rewards')
+    plt.title('Rewards over Time')
+    plt.savefig('DQN+CNN.jpg')
+    plt.show()
+
+
 def main():
-    # Train
-    # model = train_dqn_model(train_env)
     env = create_env()
     if TRAIN_MODEL:
         model = train_dqn_model(env)
+
+        # Load rewards
+        with open("highway_cnn/rewards.npy", "rb") as f:
+            rewards = np.load(f)
+
+        plot_rewards(rewards)
     else:
         model = DQN.load("highway_cnn/model")
         test_cnn_model(model, env)
-
-    # Record video
-    # model = DQN.load("highway_cnn/model")
-    # test_env = create_test_env()
-    # video_length = 2 * test_env.envs[0].config["duration"]
-    # record_video(model, test_env, video_length)
 
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Set to True if training the model is needed
-TRAIN_MODEL = True  # Change to True if you want to train
+TRAIN_MODEL = False  # Change to True if you want to train
 
 
 def create_env():

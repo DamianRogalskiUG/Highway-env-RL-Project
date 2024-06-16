@@ -82,6 +82,7 @@ def plot_rewards(rewards):
     plt.xlabel('Episodes')
     plt.ylabel('Rewards')
     plt.title('Rewards over Time')
+    plt.savefig('PPO.jpg')
     plt.show()
 
 

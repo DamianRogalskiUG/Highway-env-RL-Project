@@ -34,7 +34,7 @@ def create_env():
     return env
 
 
-def train_ppo_model(env, total_timesteps=int(2e4), num_cpu=6, batch_size=64):
+def train_ppo_model(env, total_timesteps=int(1e5), num_cpu=6, batch_size=64):
     num_steps = batch_size * 12 // num_cpu
     policy_architecture = [dict(pi=[256, 256], vf=[256, 256])]
     new_env = make_vec_env("highway-fast-v0", n_envs=num_cpu, vec_env_cls=SubprocVecEnv)
@@ -86,7 +86,7 @@ def plot_rewards(rewards):
     plt.xlabel('Episodes')
     plt.ylabel('Rewards')
     plt.title('Rewards over Time')
-    plt.savefig('../PPO/PPO.jpg')
+    plt.savefig('../PPO/PPO_20k_episodes.jpg')
     plt.show()
 
 

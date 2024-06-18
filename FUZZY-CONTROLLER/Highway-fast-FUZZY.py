@@ -6,7 +6,7 @@ import highway_env
 
 
 def create_env():
-    env = gym.make("highway-v0", render_mode="rgb_array")
+    env = gym.make("highway-fast-v0", render_mode="rgb_array")
     simulation_params = {
         "observation": {
             "type": "Kinematics"

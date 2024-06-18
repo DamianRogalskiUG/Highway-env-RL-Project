@@ -3,3 +3,5 @@ highway-env
 gym
 gymnasium
 tensorboard
+sklearn-fuzzy
+stable_baselines3

@@ -6,7 +6,7 @@
 
 \title{Implementacja algorytmów RL oraz kontrolera rozmytego w środowisku highway-fast-v0}
 \author{Damian Rogalski}
-\date{June 2024}
+\date{Czerwiec 2024}
 
 \begin{document}
 
@@ -28,7 +28,7 @@ Poniższa grafika przedstawia wygląd środowiska, zielony pojazd to samochód, 
 
 
 \section{Modele}
-\subsection{DQN}
+\subsection{DQN (Deep Q-network)}
 \paragraph{}
  Trenowanie modelu przeprowadziłem na 20 tysiącach epizodów gry. Początkowo model trenowałem stosując środowisko gymnasium uruchamiając go dla jednego procesu. Proces uczenia trwał 2 godziny i poskutkował utworzeniem przeuczonego modelu, który nie był skuteczny w dostosowywaniu się do zmieniających się warunków środowiska. Zamiast wykonywać optymalne manewry to zawsze decydował się zmienić pas na prawy i jechał po nim do końca często uderzając przy tym w poprzedzający pojazd, co całkowicie przekreślało sens jego wykorzystania. Postanowiłem wykorzystać sztuczne środowisko wektorowe uruchamiając w nim środowisko highway-fast-v0 dla 6 procesów jednocześnie. Pozwoliło to skrócić czas uczenia z 2 godzin do 3 minut. Wynikowy model nie jest przeuczony i cechuje się wyższą skutecznością w zmiennym środowisku. Przy procesie uczenia wykonałem również wykres osiągnietej nagrody dla konkretnego epizodu danego procesu. Oznacza to że oś X będzie przedstawiać liczbę wszystkich epizodów podzieloną przez liczbę procesów.
 
@@ -39,7 +39,7 @@ Wykres ukazuje przez wysoki rozrzut wyników, że model przez pierwsze 3000 epiz
 
 \newpage
 
-\subsection{DQN+CNN ()}
+\subsection{DQN+CNN (Deep Q-network + Convolutional Neural Network)}
 \paragraph{}
 Do trenowania modelu wykorzystałem środowisko z obserwacją ustawioną na skalę szarości. Uczenie przeprowadziłem na 100 tysiącach epizodów gry. Algorytm wyciąga obrazy i wykorzystuje je do uczenia się predykcji optymalnych zachowań. Korzystając z obliczanej nagrody określa, które zdjęcia przedstawiały najwyżej oceniane akcje. Do minimalizacji czasu wykorzystałem wektorowe środowisko uruchomione na jednym procesie. Trenowanie trwało przez 7 godzin i poskutkowało utworzeniem modelu o wysokiej skuteczności przewidywanych akcji, niezależnie od stanu środowiska. Dla algorytmu wykonałem wykres uczenia.
 
@@ -50,7 +50,7 @@ Wykres ukazuje, że model przez cały cykl uczenia osiągał najwyższą nagrod�
 
 \newpage
 
-\subsection{PPO (Proximal Policy Optimization}
+\subsection{PPO (Proximal Policy Optimization)}
 \paragraph{}
 Tak jak w przypadku DQN początkowo przeprowadziłem trenowanie w środowisku gymnasium dla 20 tysięcy epizodów, co zajęło 3 godziny i stworzyło przeuczony model, który miał niską skuteczność przewidywania ruchów i zachowywał się tak samo jak przeuczony model z algorytmem DQN. Stwierdziłem, że powtórzę proces trenowania w środowisku wektorowym na 6 procesach jednocześnie dla 20 tysięcy epizodów gry, który skrócił czas do 1 minuty. Wynikowy model osiąga podobną skuteczność co DQN, wymagając przy tym krótszego czasu trenowania przy takiej samej liczbie epizodów.
 

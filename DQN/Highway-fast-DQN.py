@@ -45,7 +45,7 @@ def train_dqn_model(env, total_timesteps=2e4):
         gradient_steps=1,
         target_update_interval=50,
         verbose=1,
-        tensorboard_log="highway_dqn/"
+        tensorboard_log="DQN/highway_dqn/"
     )
 
     # List to keep track of rewards
@@ -57,10 +57,10 @@ def train_dqn_model(env, total_timesteps=2e4):
         return True
 
     model.learn(total_timesteps=int(total_timesteps), callback=reward_callback)
-    model.save("highway_dqn/model")
+    model.save("DQN/highway_dqn/model")
 
     # Save rewards for plotting
-    with open("highway_dqn/rewards.npy", "wb") as f:
+    with open("DQN/highway_dqn/rewards.npy", "wb") as f:
         np.save(f, rewards)
 
     return model
@@ -83,6 +83,7 @@ def plot_rewards(rewards):
     plt.xlabel('Episodes')
     plt.ylabel('Rewards')
     plt.title('Rewards over Time')
+    plt.savefig('DQN.jpg')
     plt.show()
 
 
@@ -98,7 +99,7 @@ def main():
 
         plot_rewards(rewards)
     else:
-        model = DQN.load("highway_dqn/model", env=env)
+        model = DQN.load("DQN/highway_dqn/model", env=env)
 
     test_trained_model(model, env)
 

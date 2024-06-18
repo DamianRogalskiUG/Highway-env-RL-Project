@@ -19,8 +19,10 @@ def create_env():
                 "stack_size": 4,
                 "weights": [0.2989, 0.5870, 0.1140],  # weights for RGB conversion
                 "scaling": 1.75,
+
             },
             "simulation_frequency": 30,
+            "vehicles_count": 15,
 
         }
     )
@@ -49,7 +51,7 @@ def train_dqn_model(env, total_timesteps=int(1e5)):
         target_update_interval=50,
         exploration_fraction=0.7,
         verbose=1,
-        tensorboard_log="highway_cnn/",
+        tensorboard_log="DQN+CNN/highway_cnn/",
     )
 
     # List to keep track of rewards
@@ -61,10 +63,10 @@ def train_dqn_model(env, total_timesteps=int(1e5)):
         return True
 
     model.learn(total_timesteps=total_timesteps, callback=reward_callback)
-    model.save("highway_cnn/model")
+    model.save("DQN+CNN/highway_cnn/model")
 
     # Save rewards for plotting
-    with open("highway_cnn/rewards.npy", "wb") as f:
+    with open("DQN+CNN/highway_cnn/rewards.npy", "wb") as f:
         np.save(f, rewards)
 
     return model
@@ -105,12 +107,12 @@ def main():
         model = train_dqn_model(env)
 
         # Load rewards
-        with open("highway_cnn/rewards.npy", "rb") as f:
+        with open("DQN+CNN/highway_cnn/rewards.npy", "rb") as f:
             rewards = np.load(f)
 
         plot_rewards(rewards)
     else:
-        model = DQN.load("highway_cnn/model")
+        model = DQN.load("DQN+CNN/highway_cnn/model")
         test_cnn_model(model, env)
 
 

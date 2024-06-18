@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Set to True if training the model is needed
-TRAIN_MODEL = True # Change to True if you want to train
+TRAIN_MODEL = False # Change to True if you want to train
 
 
 def create_env():
@@ -56,7 +56,7 @@ def train_ppo_model(env, total_timesteps=int(2e4), num_cpu=6, batch_size=64):
         return True
 
     model.learn(total_timesteps=total_timesteps, callback=reward_callback)
-    model.save("highway_ppo/model")
+    model.save("../PPO/highway_ppo/model")
 
     # Save rewards for plotting
     with open("highway_ppo/rewards.npy", "wb") as f:
@@ -98,7 +98,7 @@ def main():
 
         plot_rewards(rewards)
     else:
-        model = PPO.load("highway_ppo/model")
+        model = PPO.load("../PPO/highway_ppo/model")
 
     test_ppo_model(model, env)
 

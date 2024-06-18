@@ -1,11 +1,13 @@
 import gymnasium as gym
 from stable_baselines3 import PPO
+from stable_baselines3.common.vec_env import VecVideoRecorder, SubprocVecEnv
+from stable_baselines3.common.env_util import make_vec_env
 import highway_env
 import matplotlib.pyplot as plt
 import numpy as np
 
 # Set to True if training the model is needed
-TRAIN_MODEL = False # Change to True if you want to train
+TRAIN_MODEL = True # Change to True if you want to train
 
 
 def create_env():
@@ -35,16 +37,17 @@ def create_env():
 def train_ppo_model(env, total_timesteps=int(2e4), num_cpu=6, batch_size=64):
     num_steps = batch_size * 12 // num_cpu
     policy_architecture = [dict(pi=[256, 256], vf=[256, 256])]
+    new_env = make_vec_env("highway-fast-v0", n_envs=num_cpu, vec_env_cls=SubprocVecEnv)
     model = PPO(
         "MlpPolicy",
-        env,
+        new_env,
         policy_kwargs=dict(net_arch=policy_architecture),
         n_steps=num_steps,
         batch_size=batch_size,
         n_epochs=10,
         learning_rate=5e-4,
         verbose=2,
-        tensorboard_log="highway_ppo/"
+        tensorboard_log="../PPO/highway_ppo/"
     )
 
     # List to keep track of rewards
@@ -59,8 +62,9 @@ def train_ppo_model(env, total_timesteps=int(2e4), num_cpu=6, batch_size=64):
     model.save("../PPO/highway_ppo/model")
 
     # Save rewards for plotting
-    with open("highway_ppo/rewards.npy", "wb") as f:
+    with open("../PPO/highway_ppo/rewards.npy", "wb") as f:
         np.save(f, rewards)
+        plot_rewards(rewards)
 
     return model
 
@@ -82,7 +86,7 @@ def plot_rewards(rewards):
     plt.xlabel('Episodes')
     plt.ylabel('Rewards')
     plt.title('Rewards over Time')
-    plt.savefig('PPO.jpg')
+    plt.savefig('../PPO/PPO.jpg')
     plt.show()
 
 
@@ -92,11 +96,6 @@ def main():
     if TRAIN_MODEL:
         model = train_ppo_model(env)
 
-        # Load rewards
-        with open("highway_ppo/rewards.npy", "rb") as f:
-            rewards = np.load(f)
-
-        plot_rewards(rewards)
     else:
         model = PPO.load("../PPO/highway_ppo/model")
 

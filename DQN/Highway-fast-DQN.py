@@ -3,9 +3,11 @@ from stable_baselines3 import DQN
 import highway_env
 import matplotlib.pyplot as plt
 import numpy as np
+from stable_baselines3.common.env_util import make_vec_env
+from stable_baselines3.common.vec_env import SubprocVecEnv
 
 # Set to True if training the model is needed
-TRAIN_MODEL = False  # Change to True if you want to train
+TRAIN_MODEL = True  # Change to True if you want to train
 
 
 def create_env():
@@ -33,9 +35,10 @@ def create_env():
 
 
 def train_dqn_model(env, total_timesteps=2e4):
+    new_env = make_vec_env("highway-fast-v0", n_envs=6, vec_env_cls=SubprocVecEnv)
     model = DQN(
         "MlpPolicy",
-        env,
+        new_env,
         policy_kwargs=dict(net_arch=[256, 256]),
         learning_rate=5e-4,
         buffer_size=15000,
@@ -62,6 +65,7 @@ def train_dqn_model(env, total_timesteps=2e4):
     # Save rewards for plotting
     with open("DQN/highway_dqn/rewards.npy", "wb") as f:
         np.save(f, rewards)
+        plot_rewards(rewards)
 
     return model
 
@@ -83,7 +87,7 @@ def plot_rewards(rewards):
     plt.xlabel('Episodes')
     plt.ylabel('Rewards')
     plt.title('Rewards over Time')
-    plt.savefig('DQN.jpg')
+    plt.savefig('DQN/DQN.jpg')
     plt.show()
 
 
@@ -93,11 +97,6 @@ def main():
     if TRAIN_MODEL:
         model = train_dqn_model(env)
 
-        # Load rewards
-        with open("highway_dqn/rewards.npy", "rb") as f:
-            rewards = np.load(f)
-
-        plot_rewards(rewards)
     else:
         model = DQN.load("DQN/highway_dqn/model", env=env)
 

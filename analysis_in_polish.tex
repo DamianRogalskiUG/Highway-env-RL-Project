@@ -1,5 +1,8 @@
 \documentclass{article}
 \usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
 
 \title{Implementacja algorytmów RL oraz kontrolera rozmytego w środowisku highway-fast-v0}
 \author{Damian Rogalski}
@@ -15,7 +18,7 @@ Założeniem projektu była implementacja trzech algorytmów uczenia przez wzmac
 
 \section{Środowisko highway-fast-v0}
 \paragraph{}
-Środowisko z biblioteki Highway-env, w którym celem jest poruszanie pojazdem w taki sposób, żeby rozwinął jak najwyższą predkość, za co otrzymuje najwyższą nagrodę, lecz za każdą kolizję otrzymuje karę. Na drodze znajdują się przeszkody w postaci innych pojazdów, które poruszają się z różną prędkością i potrafią zmieniać pasy. Kluczem jest wyuczenie własnego modelu manewru przyspieszania, hamowania, wyprzedzania innych pojazdów oraz zmiany toru jazdy.
+Jest to środowisko z biblioteki Highway-env, w którym celem jest poruszanie pojazdem w taki sposób, żeby rozwinął jak najwyższą predkość, za co otrzymuje najwyższą nagrodę, lecz za każdą kolizję otrzymuje karę. Na drodze znajdują się przeszkody w postaci innych pojazdów, które poruszają się z różną prędkością i potrafią zmieniać pasy. Kluczem jest wyuczenie własnego modelu manewru przyspieszania, hamowania, wyprzedzania innych pojazdów oraz zmiany toru jazdy.
 Poniższa grafika przedstawia wygląd środowiska, zielony pojazd to samochód, którym steruje nasz algorytm, natomiast niebieskie pojazdy to nasze przeszkody.
 
 \paragraph{}
